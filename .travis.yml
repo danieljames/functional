@@ -17,23 +17,23 @@ addons:
 matrix:
     include:
       - compiler: gcc
-        env: BJAM_TOOLSET=gcc-std03
+        env: |
+          USER_CONFIG="using gcc : : g++-4.8 -Werror --std=c++03 -fsanitize=address ;"
       - compiler: gcc
-        env: BJAM_TOOLSET=gcc-std11
+        env: |
+          USER_CONFIG="using gcc : : g++-4.8 -Werror --std=c++11 -fsanitize=address ;"
       - compiler: clang
-        env: BJAM_TOOLSET=clang-std03
+        env: |
+          USER_CONFIG="using clang : : clang++ -Werror --std=c++03 -fsanitize=address ;"
       - compiler: clang
-        env: BJAM_TOOLSET=clang-std11
+        env: |
+          USER_CONFIG="using clang : : clang++ -Werror --std=c++11 -fsanitize=address ;"
       - compiler: clang
-        env: BJAM_TOOLSET=clang-pretend_no_auto_ptr_etc
+        env: |
+          USER_CONFIG="using clang : : clang++ -Werror --std=c++11 -D_HAS_AUTO_PTR_ETC=0 ;"
 
 before_script:
-    - |
-        echo "using gcc : std03 : g++-4.8 -Werror --std=c++03 -fsanitize=address ;" > ~/user-config.jam
-        echo "using gcc : std11 : g++-4.8 -Werror --std=c++11 -fsanitize=address ;" >> ~/user-config.jam
-        echo "using clang : std03 : clang++ -Werror --std=c++03 -fsanitize=address ;" >> ~/user-config.jam
-        echo "using clang : std11 : clang++ -Werror --std=c++11 -fsanitize=address ;" >> ~/user-config.jam
-        echo "using clang : pretend_no_auto_ptr_etc : clang++ -Werror --std=c++11 -D_HAS_AUTO_PTR_ETC=0 ;" >> ~/user-config.jam
+    - echo $USER_CONFIG > ~/user-config.jam
     - cat ~/user-config.jam
     - touch Jamroot.jam
 
