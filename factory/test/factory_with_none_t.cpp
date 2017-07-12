@@ -27,6 +27,7 @@ int main()
     {
       sum* instance( boost::factory< sum*, boost::none_t >()(one,two) );
       BOOST_TEST(*instance == 3);
+      delete instance;
     }
 #if !defined(BOOST_NO_AUTO_PTR)
     {
