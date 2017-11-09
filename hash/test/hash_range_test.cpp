@@ -73,6 +73,19 @@ void hash_range_tests()
     BOOST_HASH_TEST_NAMESPACE::hash_range(seed, x.begin(), x.end());
     BOOST_TEST(seed ==
         BOOST_HASH_TEST_NAMESPACE::hash_range(values5.begin(), values5.end()));
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    std::vector<int>::iterator it = values5.begin();
+    BOOST_HASH_TEST_NAMESPACE::hash_range(it, it);
+    BOOST_STATIC_ASSERT((
+        noexcept(BOOST_HASH_TEST_NAMESPACE::hash_range(it, it)) ==
+        (noexcept(++it) && noexcept(*it) && noexcept(it == it))
+    ));
+    BOOST_STATIC_ASSERT((
+        noexcept(BOOST_HASH_TEST_NAMESPACE::hash_range(seed, it, it)) ==
+        (noexcept(++it) && noexcept(*it) && noexcept(it == it))
+    ));
+#endif // BOOST_NO_CXX11_NOEXCEPT
 }
 
 int main()

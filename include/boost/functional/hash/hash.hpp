@@ -23,6 +23,7 @@
 #include <boost/limits.hpp>
 #include <boost/type_traits/is_enum.hpp>
 #include <boost/type_traits/is_integral.hpp>
+#include <boost/type_traits/declval.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/cstdint.hpp>
 
@@ -148,39 +149,44 @@ namespace boost
     }
 
     template <typename T>
-    typename boost::hash_detail::basic_numbers<T>::type hash_value(T);
+    typename boost::hash_detail::basic_numbers<T>::type hash_value(T)
+        BOOST_NOEXCEPT;
     template <typename T>
-    typename boost::hash_detail::long_numbers<T>::type hash_value(T);
+    typename boost::hash_detail::long_numbers<T>::type hash_value(T)
+        BOOST_NOEXCEPT;
     template <typename T>
-    typename boost::hash_detail::ulong_numbers<T>::type hash_value(T);
+    typename boost::hash_detail::ulong_numbers<T>::type hash_value(T)
+        BOOST_NOEXCEPT;
 
     template <typename T>
     typename boost::enable_if<boost::is_enum<T>, std::size_t>::type
-        hash_value(T);
+        hash_value(T) BOOST_NOEXCEPT;
 
 #if !BOOST_WORKAROUND(__DMC__, <= 0x848)
-    template <class T> std::size_t hash_value(T* const&);
+    template <class T> std::size_t hash_value(T* const&) BOOST_NOEXCEPT;
 #else
-    template <class T> std::size_t hash_value(T*);
+    template <class T> std::size_t hash_value(T*) BOOST_NOEXCEPT;
 #endif
 
 #if !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
     template< class T, unsigned N >
-    std::size_t hash_value(const T (&x)[N]);
+    std::size_t hash_value(const T (&x)[N]) BOOST_NOEXCEPT;
 
     template< class T, unsigned N >
-    std::size_t hash_value(T (&x)[N]);
+    std::size_t hash_value(T (&x)[N]) BOOST_NOEXCEPT;
 #endif
 
     template <class Ch, class A>
     std::size_t hash_value(
-        std::basic_string<Ch, std::BOOST_HASH_CHAR_TRAITS<Ch>, A> const&);
+        std::basic_string<Ch, std::BOOST_HASH_CHAR_TRAITS<Ch>, A> const& v)
+            BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+                boost::hash_range(v.begin(), v.end())));
 
     template <typename T>
-    typename boost::hash_detail::float_numbers<T>::type hash_value(T);
+    typename boost::hash_detail::float_numbers<T>::type hash_value(T) BOOST_NOEXCEPT;
 
 #if !defined(BOOST_NO_CXX11_HDR_TYPEINDEX)
-    std::size_t hash_value(std::type_index);
+    std::size_t hash_value(std::type_index) BOOST_NOEXCEPT;
 #endif
 
     // Implementation
@@ -188,7 +194,7 @@ namespace boost
     namespace hash_detail
     {
         template <class T>
-        inline std::size_t hash_value_signed(T val)
+        inline std::size_t hash_value_signed(T val) BOOST_NOEXCEPT
         {
              const unsigned int size_t_bits = std::numeric_limits<std::size_t>::digits;
              // ceiling(std::numeric_limits<T>::digits / size_t_bits) - 1
@@ -209,7 +215,7 @@ namespace boost
         }
 
         template <class T>
-        inline std::size_t hash_value_unsigned(T val)
+        inline std::size_t hash_value_unsigned(T val) BOOST_NOEXCEPT
         {
              const unsigned int size_t_bits = std::numeric_limits<std::size_t>::digits;
              // ceiling(std::numeric_limits<T>::digits / size_t_bits) - 1
@@ -229,13 +235,13 @@ namespace boost
         }
 
         template <typename SizeT>
-        inline void hash_combine_impl(SizeT& seed, SizeT value)
+        inline void hash_combine_impl(SizeT& seed, SizeT value) BOOST_NOEXCEPT
         {
             seed ^= value + 0x9e3779b9 + (seed<<6) + (seed>>2);
         }
 
         inline void hash_combine_impl(boost::uint32_t& h1,
-                boost::uint32_t k1)
+                boost::uint32_t k1) BOOST_NOEXCEPT
         {
             const uint32_t c1 = 0xcc9e2d51;
             const uint32_t c2 = 0x1b873593;
@@ -256,7 +262,7 @@ namespace boost
         !(defined(__GNUC__) && ULONG_MAX == 0xffffffff)
 
         inline void hash_combine_impl(boost::uint64_t& h,
-                boost::uint64_t k)
+                boost::uint64_t k) BOOST_NOEXCEPT
         {
             const boost::uint64_t m = UINT64_C(0xc6a4a7935bd1e995);
             const int r = 47;
@@ -278,34 +284,37 @@ namespace boost
 
     template <typename T>
     typename boost::hash_detail::basic_numbers<T>::type hash_value(T v)
+        BOOST_NOEXCEPT
     {
         return static_cast<std::size_t>(v);
     }
 
     template <typename T>
     typename boost::hash_detail::long_numbers<T>::type hash_value(T v)
+        BOOST_NOEXCEPT
     {
         return hash_detail::hash_value_signed(v);
     }
 
     template <typename T>
     typename boost::hash_detail::ulong_numbers<T>::type hash_value(T v)
+        BOOST_NOEXCEPT
     {
         return hash_detail::hash_value_unsigned(v);
     }
 
     template <typename T>
     typename boost::enable_if<boost::is_enum<T>, std::size_t>::type
-        hash_value(T v)
+        hash_value(T v) BOOST_NOEXCEPT
     {
         return static_cast<std::size_t>(v);
     }
 
     // Implementation by Alberto Barbati and Dave Harris.
 #if !BOOST_WORKAROUND(__DMC__, <= 0x848)
-    template <class T> std::size_t hash_value(T* const& v)
+    template <class T> std::size_t hash_value(T* const& v) BOOST_NOEXCEPT
 #else
-    template <class T> std::size_t hash_value(T* v)
+    template <class T> std::size_t hash_value(T* v) BOOST_NOEXCEPT
 #endif
     {
 #if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
@@ -332,6 +341,7 @@ namespace boost
 
     template <class T>
     inline void hash_combine(std::size_t& seed, T const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(boost::hash<T>()(v)))
     {
         boost::hash<T> hasher;
         return boost::hash_detail::hash_combine_impl(seed, hasher(v));
@@ -343,6 +353,9 @@ namespace boost
 
     template <class It>
     inline std::size_t hash_range(It first, It last)
+        BOOST_NOEXCEPT_IF(
+            BOOST_NOEXCEPT_EXPR(++first != last) &&
+            BOOST_NOEXCEPT_EXPR(boost::hash_combine(*(std::size_t*)0, *first)))
     {
         std::size_t seed = 0;
 
@@ -356,6 +369,9 @@ namespace boost
 
     template <class It>
     inline void hash_range(std::size_t& seed, It first, It last)
+        BOOST_NOEXCEPT_IF(
+            BOOST_NOEXCEPT_EXPR(++first != last) &&
+            BOOST_NOEXCEPT_EXPR(boost::hash_combine(seed, *first)))
     {
         for(; first != last; ++first)
         {
@@ -391,13 +407,13 @@ namespace boost
 
 #if !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
     template< class T, unsigned N >
-    inline std::size_t hash_value(const T (&x)[N])
+    inline std::size_t hash_value(const T (&x)[N]) BOOST_NOEXCEPT
     {
         return boost::hash_value(static_cast<T const*>(x));
     }
 
     template< class T, unsigned N >
-    inline std::size_t hash_value(T (&x)[N])
+    inline std::size_t hash_value(T (&x)[N]) BOOST_NOEXCEPT
     {
         return boost::hash_value(static_cast<T*>(x));
     }
@@ -406,18 +422,21 @@ namespace boost
     template <class Ch, class A>
     inline std::size_t hash_value(
         std::basic_string<Ch, std::BOOST_HASH_CHAR_TRAITS<Ch>, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <typename T>
     typename boost::hash_detail::float_numbers<T>::type hash_value(T v)
+        BOOST_NOEXCEPT
     {
         return boost::hash_detail::float_hash_value(v);
     }
 
 #if !defined(BOOST_NO_CXX11_HDR_TYPEINDEX)
-    inline std::size_t hash_value(std::type_index v)
+    inline std::size_t hash_value(std::type_index v) BOOST_NOEXCEPT
     {
         return v.hash_code();
     }
@@ -426,12 +445,12 @@ namespace boost
     //
     // boost::hash
     //
-    
+
     // Define the specializations required by the standard. The general purpose
     // boost::hash is defined later in extensions.hpp if
     // BOOST_HASH_NO_EXTENSIONS is not defined.
-    
-    // BOOST_HASH_SPECIALIZE - define a specialization for a type which is
+
+    // BOOST_HASH_SPECIALIZE_NOEXCEPT - define a specialization for a type which is
     // passed by copy.
     //
     // BOOST_HASH_SPECIALIZE_REF - define a specialization for a type which is
@@ -439,11 +458,11 @@ namespace boost
     //
     // These are undefined later.
 
-#define BOOST_HASH_SPECIALIZE(type) \
+#define BOOST_HASH_SPECIALIZE_NOEXCEPT(type) \
     template <> struct hash<type> \
          : public boost::hash_detail::hash_base<type> \
     { \
-        std::size_t operator()(type v) const \
+        std::size_t operator()(type v) const BOOST_NOEXCEPT \
         { \
             return boost::hash_value(v); \
         } \
@@ -454,34 +473,35 @@ namespace boost
          : public boost::hash_detail::hash_base<type> \
     { \
         std::size_t operator()(type const& v) const \
+            BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(boost::hash_value(v))) \
         { \
             return boost::hash_value(v); \
         } \
     };
 
-    BOOST_HASH_SPECIALIZE(bool)
-    BOOST_HASH_SPECIALIZE(char)
-    BOOST_HASH_SPECIALIZE(signed char)
-    BOOST_HASH_SPECIALIZE(unsigned char)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(bool)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(char)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(signed char)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(unsigned char)
 #if !defined(BOOST_NO_INTRINSIC_WCHAR_T)
-    BOOST_HASH_SPECIALIZE(wchar_t)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(wchar_t)
 #endif
 #if !defined(BOOST_NO_CXX11_CHAR16_T)
-    BOOST_HASH_SPECIALIZE(char16_t)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(char16_t)
 #endif
 #if !defined(BOOST_NO_CXX11_CHAR32_T)
-    BOOST_HASH_SPECIALIZE(char32_t)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(char32_t)
 #endif
-    BOOST_HASH_SPECIALIZE(short)
-    BOOST_HASH_SPECIALIZE(unsigned short)
-    BOOST_HASH_SPECIALIZE(int)
-    BOOST_HASH_SPECIALIZE(unsigned int)
-    BOOST_HASH_SPECIALIZE(long)
-    BOOST_HASH_SPECIALIZE(unsigned long)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(short)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(unsigned short)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(int)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(unsigned int)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(long)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(unsigned long)
 
-    BOOST_HASH_SPECIALIZE(float)
-    BOOST_HASH_SPECIALIZE(double)
-    BOOST_HASH_SPECIALIZE(long double)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(float)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(double)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(long double)
 
     BOOST_HASH_SPECIALIZE_REF(std::string)
 #if !defined(BOOST_NO_STD_WSTRING) && !defined(BOOST_NO_INTRINSIC_WCHAR_T)
@@ -495,20 +515,20 @@ namespace boost
 #endif
 
 #if !defined(BOOST_NO_LONG_LONG)
-    BOOST_HASH_SPECIALIZE(boost::long_long_type)
-    BOOST_HASH_SPECIALIZE(boost::ulong_long_type)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(boost::long_long_type)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(boost::ulong_long_type)
 #endif
 
 #if defined(BOOST_HAS_INT128)
-    BOOST_HASH_SPECIALIZE(boost::int128_type)
-    BOOST_HASH_SPECIALIZE(boost::uint128_type)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(boost::int128_type)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(boost::uint128_type)
 #endif
 
 #if !defined(BOOST_NO_CXX11_HDR_TYPEINDEX)
-    BOOST_HASH_SPECIALIZE(std::type_index)
+    BOOST_HASH_SPECIALIZE_NOEXCEPT(std::type_index)
 #endif
 
-#undef BOOST_HASH_SPECIALIZE
+#undef BOOST_HASH_SPECIALIZE_NOEXCEPT
 #undef BOOST_HASH_SPECIALIZE_REF
 
 // Specializing boost::hash for pointers.
@@ -519,7 +539,7 @@ namespace boost
     struct hash<T*>
         : public boost::hash_detail::hash_base<T*>
     {
-        std::size_t operator()(T* v) const
+        std::size_t operator()(T* v) const BOOST_NOEXCEPT
         {
 #if !BOOST_WORKAROUND(__SUNPRO_CC, <= 0x590)
             return boost::hash_value(v);
@@ -552,7 +572,7 @@ namespace boost
             struct inner
                 : public boost::hash_detail::hash_base<T>
             {
-                std::size_t operator()(T val) const
+                std::size_t operator()(T val) const BOOST_NOEXCEPT
                 {
 #if !BOOST_WORKAROUND(__SUNPRO_CC, <= 590)
                     return boost::hash_value(val);

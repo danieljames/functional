@@ -36,6 +36,11 @@ void pointer_tests()
     // This isn't specified in Peter's proposal:
     BOOST_TEST(x1(0) == 0);
 #endif
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(x1(0))));
+    BOOST_STATIC_ASSERT((noexcept(x1(&int1))));
+#endif // BOOST_NO_CXX11_NOEXCEPT
 }
 
 int main()

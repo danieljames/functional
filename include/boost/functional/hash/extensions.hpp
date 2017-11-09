@@ -44,27 +44,49 @@
 namespace boost
 {
     template <class A, class B>
-    std::size_t hash_value(std::pair<A, B> const&);
+    std::size_t hash_value(std::pair<A, B> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR((
+            boost::hash<A>()(v.first),
+            boost::hash<B>()(v.second))));
     template <class T, class A>
-    std::size_t hash_value(std::vector<T, A> const&);
+    std::size_t hash_value(std::vector<T, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())));
     template <class T, class A>
-    std::size_t hash_value(std::list<T, A> const& v);
+    std::size_t hash_value(std::list<T, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())));
     template <class T, class A>
-    std::size_t hash_value(std::deque<T, A> const& v);
+    std::size_t hash_value(std::deque<T, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())));
     template <class K, class C, class A>
-    std::size_t hash_value(std::set<K, C, A> const& v);
+    std::size_t hash_value(std::set<K, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())));
     template <class K, class C, class A>
-    std::size_t hash_value(std::multiset<K, C, A> const& v);
+    std::size_t hash_value(std::multiset<K, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())));
     template <class K, class T, class C, class A>
-    std::size_t hash_value(std::map<K, T, C, A> const& v);
+    std::size_t hash_value(std::map<K, T, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())));
     template <class K, class T, class C, class A>
-    std::size_t hash_value(std::multimap<K, T, C, A> const& v);
+    std::size_t hash_value(std::multimap<K, T, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())));
 
     template <class T>
-    std::size_t hash_value(std::complex<T> const&);
+    std::size_t hash_value(std::complex<T> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash<T>()(v.imag())));
 
     template <class A, class B>
     std::size_t hash_value(std::pair<A, B> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR((
+            boost::hash<A>()(v.first),
+            boost::hash<B>()(v.second))))
     {
         std::size_t seed = 0;
         boost::hash_combine(seed, v.first);
@@ -74,48 +96,64 @@ namespace boost
 
     template <class T, class A>
     std::size_t hash_value(std::vector<T, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <class T, class A>
     std::size_t hash_value(std::list<T, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <class T, class A>
     std::size_t hash_value(std::deque<T, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <class K, class C, class A>
     std::size_t hash_value(std::set<K, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <class K, class C, class A>
     std::size_t hash_value(std::multiset<K, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <class K, class T, class C, class A>
     std::size_t hash_value(std::map<K, T, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <class K, class T, class C, class A>
     std::size_t hash_value(std::multimap<K, T, C, A> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
 
     template <class T>
     std::size_t hash_value(std::complex<T> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash<T>()(v.imag())))
     {
         boost::hash<T> hasher;
         std::size_t seed = hasher(v.imag());
@@ -126,6 +164,8 @@ namespace boost
 #if !defined(BOOST_NO_CXX11_HDR_ARRAY)
     template <class T, std::size_t N>
     std::size_t hash_value(std::array<T, N> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_range(v.begin(), v.end())))
     {
         return boost::hash_range(v.begin(), v.end());
     }
@@ -133,6 +173,24 @@ namespace boost
 
 #if !defined(BOOST_NO_CXX11_HDR_TUPLE)
     namespace hash_detail {
+        template <typename T, std::size_t I = std::tuple_size<T>::value>
+        struct is_tuple_noexcept_hashable
+        {
+            enum {
+                value =
+                    BOOST_NOEXCEPT_EXPR(
+                        boost::hash_combine(boost::declval<std::size_t&>(),
+                        std::get<I - 1>(boost::declval<T>()))) &&
+                    is_tuple_noexcept_hashable<T, I - 1>::value
+            };
+        };
+
+        template <typename T>
+        struct is_tuple_noexcept_hashable<T, 0u>
+        {
+            enum { value = true };
+        };
+
         template <std::size_t I, typename T>
         inline typename boost::enable_if_c<(I == std::tuple_size<T>::value),
                 void>::type
@@ -151,6 +209,7 @@ namespace boost
 
         template <typename T>
         inline std::size_t hash_tuple(T const& v)
+            BOOST_NOEXCEPT_IF(is_tuple_noexcept_hashable<T>::value)
         {
             std::size_t seed = 0;
             boost::hash_detail::hash_combine_tuple<0>(seed, v);
@@ -161,12 +220,16 @@ namespace boost
 #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
     template <typename... T>
     inline std::size_t hash_value(std::tuple<T...> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_detail::hash_tuple(v)))
     {
         return boost::hash_detail::hash_tuple(v);
     }
 #else
 
     inline std::size_t hash_value(std::tuple<> const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(
+            boost::hash_detail::hash_tuple(v)))
     {
         return boost::hash_detail::hash_tuple(v);
     }
@@ -178,6 +241,8 @@ namespace boost
     inline std::size_t hash_value(std::tuple<                               \
         BOOST_PP_ENUM_PARAMS_Z(z, n, A)                                     \
     > const& v)                                                             \
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(                              \
+            boost::hash_detail::hash_tuple(v)))                             \
     {                                                                       \
         return boost::hash_detail::hash_tuple(v);                           \
     }
@@ -190,12 +255,15 @@ namespace boost
 
 #if !defined(BOOST_NO_CXX11_SMART_PTR)
     template <typename T>
-    inline std::size_t hash_value(std::shared_ptr<T> const& x) {
+    inline std::size_t hash_value(std::shared_ptr<T> const& x) BOOST_NOEXCEPT
+    {
         return boost::hash_value(x.get());
     }
 
     template <typename T, typename Deleter>
-    inline std::size_t hash_value(std::unique_ptr<T, Deleter> const& x) {
+    inline std::size_t hash_value(std::unique_ptr<T, Deleter> const& x)
+        BOOST_NOEXCEPT
+    {
         return boost::hash_value(x.get());
     }
 #endif
@@ -258,6 +326,7 @@ namespace boost
     {
 #if !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
         std::size_t operator()(T const& val) const
+            BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(hash_value(val)))
         {
             return hash_value(val);
         }

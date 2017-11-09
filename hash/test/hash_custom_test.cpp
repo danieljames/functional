@@ -64,10 +64,17 @@ void custom_tests()
     test::custom x(55);
     BOOST_TEST(custom_hasher(x) == 550u);
 
+    // hash_value is not noexcept, so hash shouldn't be either.
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((!noexcept(custom_hasher(x))));
+#endif
+
     {
         using namespace BOOST_HASH_TEST_NAMESPACE;
         BOOST_TEST(custom_hasher(x) == hash_value(x));
     }
+
+    // Test that vectors are correctly hashed using 'hash_value'
 
     std::vector<test::custom> custom_vector;
     custom_vector.push_back(5);
@@ -87,6 +94,21 @@ void custom_tests()
     BOOST_TEST(seed == BOOST_HASH_TEST_NAMESPACE::hash_range(
         custom_vector.begin(), custom_vector.end()));
     BOOST_TEST(seed == seed2);
+
+    // Quick check that normal vector use works okay.
+
+    std::vector<test::custom> custom_vector2;
+    custom_vector2.push_back(15);
+
+    boost::hash<std::vector<test::custom> > custom_vector_hasher;
+    BOOST_TEST(custom_vector_hasher(custom_vector) !=
+        custom_vector_hasher(custom_vector2));
+    BOOST_TEST(custom_vector_hasher(custom_vector) ==
+        boost::hash_range(custom_vector.begin(), custom_vector.end()));
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((!noexcept(custom_vector_hasher(custom_vector))));
+#endif
 }
 
 #endif // BOOST_HASH_TEST_EXTENSIONS

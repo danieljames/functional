@@ -36,15 +36,15 @@ namespace boost
         struct limits<long double>
              : std::numeric_limits<long double>
         {
-            static long double epsilon() {
+            static long double epsilon() BOOST_NOEXCEPT BOOST_CONSTEXPR {
                 return LDBL_EPSILON;
             }
 
-            static long double (max)() {
+            static long double (max)() BOOST_NOEXCEPT BOOST_CONSTEXPR {
                 return LDBL_MAX;
             }
 
-            static long double (min)() {
+            static long double (min)() BOOST_NOEXCEPT BOOST_CONSTEXPR {
                 return LDBL_MIN;
             }
 

@@ -33,6 +33,10 @@ void array_int_test()
     BOOST_TEST(equal(a,a));
     BOOST_TEST(hash(b) == hash(b));
     BOOST_TEST(equal(b,b));
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(hash(a))));
+#endif
 }
 
 #endif // BOOST_HASH_TEST_EXTENSIONS

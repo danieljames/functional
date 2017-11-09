@@ -22,10 +22,17 @@ namespace boost
 {
     template <class T> struct hash;
 
-    template <class T> void hash_combine(std::size_t& seed, T const& v);
+    template <class T> void hash_combine(std::size_t& seed, T const& v)
+        BOOST_NOEXCEPT_IF(BOOST_NOEXCEPT_EXPR(boost::hash<T>()(v)));
 
-    template <class It> std::size_t hash_range(It, It);
-    template <class It> void hash_range(std::size_t&, It, It);
+    template <class It> std::size_t hash_range(It first, It last)
+        BOOST_NOEXCEPT_IF(
+            BOOST_NOEXCEPT_EXPR(++first != last) &&
+            BOOST_NOEXCEPT_EXPR(boost::hash_combine(*(std::size_t*)0, *first)));
+    template <class It> void hash_range(std::size_t& seed, It first, It last)
+        BOOST_NOEXCEPT_IF(
+            BOOST_NOEXCEPT_EXPR(++first != last) &&
+            BOOST_NOEXCEPT_EXPR(boost::hash_combine(seed, *first)));
 
 #if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))
     template <class T> inline std::size_t hash_range(T*, T*);

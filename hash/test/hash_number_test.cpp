@@ -79,7 +79,11 @@ void numeric_test(T*)
     BOOST_TEST(x1(T(25)) == BOOST_HASH_TEST_NAMESPACE::hash_value(T(25)));
 
     numeric_extra_tests<T>();
-#endif
+#endif // BOOST_HASH_TEST_EXTENSIONS
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+BOOST_STATIC_ASSERT((noexcept(x1(v1))));
+#endif // BOOST_NO_CXX11_NOEXCEPT
 }
 
 template <class T>

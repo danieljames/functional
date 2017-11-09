@@ -53,6 +53,7 @@ namespace boost
     namespace hash_detail
     {
         inline void hash_float_combine(std::size_t& seed, std::size_t value)
+            BOOST_NOEXCEPT
         {
             seed ^= value + (seed<<6) + (seed>>2);
         }
@@ -63,7 +64,7 @@ namespace boost
         // Only used for floats with known iec559 floats, and certain values in
         // numeric_limits
 
-        inline std::size_t hash_binary(char* ptr, std::size_t length)
+        inline std::size_t hash_binary(char* ptr, std::size_t length) BOOST_NOEXCEPT
         {
             std::size_t seed = 0;
 
@@ -104,7 +105,7 @@ namespace boost
         inline std::size_t float_hash_impl(Float v,
             BOOST_DEDUCED_TYPENAME boost::enable_if_c<
                 enable_binary_hash<Float, 24, 128>::value,
-                std::size_t>::type)
+                std::size_t>::type) BOOST_NOEXCEPT
         {
             return hash_binary((char*) &v, 4);
         }
@@ -114,7 +115,7 @@ namespace boost
         inline std::size_t float_hash_impl(Float v,
             BOOST_DEDUCED_TYPENAME boost::enable_if_c<
                 enable_binary_hash<Float, 53, 1024>::value,
-                std::size_t>::type)
+                std::size_t>::type) BOOST_NOEXCEPT
         {
             return hash_binary((char*) &v, 8);
         }
@@ -123,7 +124,7 @@ namespace boost
         inline std::size_t float_hash_impl(Float v,
             BOOST_DEDUCED_TYPENAME boost::enable_if_c<
                 enable_binary_hash<Float, 64, 16384>::value,
-                std::size_t>::type)
+                std::size_t>::type) BOOST_NOEXCEPT
         {
             return hash_binary((char*) &v, 10);
         }
@@ -132,7 +133,7 @@ namespace boost
         inline std::size_t float_hash_impl(Float v,
             BOOST_DEDUCED_TYPENAME boost::enable_if_c<
                 enable_binary_hash<Float, 113, 16384>::value,
-                std::size_t>::type)
+                std::size_t>::type) BOOST_NOEXCEPT
         {
             return hash_binary((char*) &v, 16);
         }
@@ -143,7 +144,7 @@ namespace boost
         // Used as a fallback when the binary hash function isn't supported.
 
         template <class T>
-        inline std::size_t float_hash_impl2(T v)
+        inline std::size_t float_hash_impl2(T v) BOOST_NOEXCEPT
         {
             boost::hash_detail::call_frexp<T> frexp;
             boost::hash_detail::call_ldexp<T> ldexp;
@@ -186,7 +187,7 @@ namespace boost
 
 #if !defined(BOOST_HASH_DETAIL_TEST_WITHOUT_GENERIC)
         template <class T>
-        inline std::size_t float_hash_impl(T v, ...)
+        inline std::size_t float_hash_impl(T v, ...) BOOST_NOEXCEPT
         {
             typedef BOOST_DEDUCED_TYPENAME select_hash_type<T>::type type;
             return float_hash_impl2(static_cast<type>(v));
@@ -204,7 +205,7 @@ namespace boost
     namespace hash_detail
     {
         template <class T>
-        inline std::size_t float_hash_value(T v)
+        inline std::size_t float_hash_value(T v) BOOST_NOEXCEPT
         {
 #if defined(fpclassify)
             switch (fpclassify(v))
@@ -239,7 +240,7 @@ namespace boost
     namespace hash_detail
     {
         template <class T>
-        inline bool is_zero(T v)
+        inline bool is_zero(T v) BOOST_NOEXCEPT
         {
 #if !defined(__GNUC__) && !defined(__clang__)
             return v == 0;
@@ -253,7 +254,7 @@ namespace boost
         }
 
         template <class T>
-        inline std::size_t float_hash_value(T v)
+        inline std::size_t float_hash_value(T v) BOOST_NOEXCEPT
         {
             return boost::hash_detail::is_zero(v) ? 0 : float_hash_impl(v, 0);
         }

@@ -62,6 +62,13 @@ namespace BOOST_PP_CAT(CONTAINER_TYPE, _tests)
                         );
             }
         }
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+        BOOST_STATIC_ASSERT((noexcept(hasher(containers[3])) == (
+            noexcept(++containers[3].begin()) &&
+            noexcept(*containers[3].begin()++) &&
+            noexcept(containers[3].end()))));
+#endif
     }
 
     void BOOST_PP_CAT(CONTAINER_TYPE, _hash_integer_tests())

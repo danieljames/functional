@@ -63,6 +63,11 @@ void generic_complex_tests(std::complex<T> v)
             <<real_hasher(real)<<" (This might not be a bug).";
         BOOST_ERROR(os.str().c_str());
     }
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(complex_hasher(v)) ==
+        noexcept((v.real(), v.imag()))));
+#endif
 }
 
 template <class Float>

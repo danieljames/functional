@@ -47,6 +47,11 @@ void function_pointer_tests()
     // This isn't specified in Peter's proposal:
     BOOST_TEST(hasher_void(0) == 0);
 #endif
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(hasher_void(&void_func1))));
+    BOOST_STATIC_ASSERT((noexcept(hasher_int(&int_func2))));
+#endif
 }
 
 int main()

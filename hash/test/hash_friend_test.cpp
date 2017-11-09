@@ -15,13 +15,13 @@ namespace test
     {
         int value_;
 
-        std::size_t hash() const
+        std::size_t hash() const BOOST_NOEXCEPT
         {
             return static_cast<std::size_t>(value_ * 10);
         }
 
 #if !defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-        friend std::size_t hash_value(custom const& x)
+        friend std::size_t hash_value(custom const& x) BOOST_NOEXCEPT
         {
             return x.hash();
         }
@@ -35,7 +35,7 @@ namespace test
 namespace boost
 {
     template <class T>
-    std::size_t hash_value(test::custom<T> x)
+    std::size_t hash_value(test::custom<T> x) BOOST_NOEXCEPT
     {
         return x.hash();
     }
@@ -72,6 +72,10 @@ void custom_tests()
         BOOST_TEST(custom_hasher(x) == hash_value(x));
     }
 
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(custom_hasher(x))));
+#endif
+
     std::vector<test::custom<int> > custom_vector;
     custom_vector.push_back(5);
     custom_vector.push_back(25);
@@ -90,6 +94,23 @@ void custom_tests()
     BOOST_TEST(seed == BOOST_HASH_TEST_NAMESPACE::hash_range(
         custom_vector.begin(), custom_vector.end()));
     BOOST_TEST(seed == seed2);
+
+    // Quick check that normal vector use works okay.
+
+    std::vector<test::custom<int> > custom_vector2;
+    custom_vector2.push_back(15);
+
+    boost::hash<std::vector<test::custom<int> > > custom_vector_hasher;
+    BOOST_TEST(custom_vector_hasher(custom_vector) !=
+        custom_vector_hasher(custom_vector2));
+    BOOST_TEST(custom_vector_hasher(custom_vector) ==
+        boost::hash_range(custom_vector.begin(), custom_vector.end()));
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(custom_vector_hasher(custom_vector)) == (
+        noexcept(*custom_vector.begin()) &&
+        noexcept(++custom_vector.begin() == custom_vector.end()))));
+#endif
 }
 
 #endif // BOOST_HASH_TEST_EXTENSIONS

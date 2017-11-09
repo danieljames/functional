@@ -59,5 +59,9 @@ int main() {
     BOOST_TEST(hash_override(test::enum_override1) ==
         hash_override(test::enum_override1));
 
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(hash1(test::enum1a))));
+#endif
+
     return boost::report_errors();
 }

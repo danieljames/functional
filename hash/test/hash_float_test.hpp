@@ -17,6 +17,7 @@
 #include <boost/functional/hash/detail/limits.hpp>
 #include <boost/functional/hash/detail/float_functions.hpp>
 #include <boost/detail/workaround.hpp>
+#include <boost/static_assert.hpp>
 
 #include <iostream>
 
@@ -301,6 +302,11 @@ void float_tests(char const* name, T* = 0)
             BOOST_HASH_TEST_NAMESPACE::hash_value(
                 boost::hash_detail::limits<T>::quiet_NaN()));
     }
+#endif
+
+#if !defined(BOOST_NO_CXX11_NOEXCEPT)
+    BOOST_STATIC_ASSERT((noexcept(x1(minus_zero))));
+    BOOST_STATIC_ASSERT((noexcept(x1(max))));
 #endif
 }
 

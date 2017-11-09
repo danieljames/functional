@@ -78,7 +78,7 @@ namespace boost {
         template <typename Float>
         struct call_ldexp {
             typedef Float float_type;
-            inline Float operator()(Float x, int y) const {
+            inline Float operator()(Float x, int y) const BOOST_NOEXCEPT {
                 return std::ldexp(x, y);
             }
         };
@@ -86,7 +86,7 @@ namespace boost {
         template <typename Float>
         struct call_frexp {
             typedef Float float_type;
-            inline Float operator()(Float x, int* y) const {
+            inline Float operator()(Float x, int* y) const BOOST_NOEXCEPT {
                 return std::frexp(x, y);
             }
         };
@@ -117,8 +117,8 @@ namespace boost {
             // Implicitly convertible to float and long double in order to avoid
             // a compile error when the dummy float functions are used.
 
-            inline operator float() const { return 0; }
-            inline operator long double() const { return 0; }
+            inline operator float() const BOOST_NOEXCEPT { return 0; }
+            inline operator long double() const BOOST_NOEXCEPT { return 0; }
         };
           
         // A type for detecting the return type of functions.
@@ -136,12 +136,12 @@ namespace boost {
         // call_ldexp
         //
         // This will get specialized for float and long double
-        
+
         template <typename Float> struct call_ldexp
         {
             typedef double float_type;
-            
-            inline double operator()(double a, int b) const
+
+            inline double operator()(double a, int b) const BOOST_NOEXCEPT
             {
                 using namespace std;
                 return ldexp(a, b);
@@ -155,8 +155,8 @@ namespace boost {
         template <typename Float> struct call_frexp
         {
             typedef double float_type;
-            
-            inline double operator()(double a, int* b) const
+
+            inline double operator()(double a, int* b) const BOOST_NOEXCEPT
             {
                 using namespace std;
                 return frexp(a, b);
@@ -173,8 +173,10 @@ namespace boost {
 // (since the arguments are built in types, ADL can't be used).
 
 namespace boost_hash_detect_float_functions {
-    template <class Float> boost::hash_detail::not_found ldexp(Float, int);
-    template <class Float> boost::hash_detail::not_found frexp(Float, int*);    
+    template <class Float> boost::hash_detail::not_found ldexp(Float, int)
+        BOOST_NOEXCEPT;
+    template <class Float> boost::hash_detail::not_found frexp(Float, int*)
+        BOOST_NOEXCEPT;
 }
 
 // Macros for generating specializations of call_ldexp and call_frexp.
@@ -193,7 +195,8 @@ namespace boost_hash_detect_float_functions {
 #define BOOST_HASH_CALL_FLOAT_FUNC(cpp_func, c99_func, type1, type2)    \
 namespace boost_hash_detect_float_functions {                           \
     template <class Float>                                              \
-    boost::hash_detail::not_found c99_func(Float, type2);               \
+    boost::hash_detail::not_found c99_func(Float, type2)                \
+        BOOST_NOEXCEPT;                                                 \
 }                                                                       \
                                                                         \
 namespace boost {                                                       \
@@ -223,7 +226,7 @@ namespace boost {                                                       \
             typedef type1 float_type;                                   \
                                                                         \
             template <typename T>                                       \
-            inline type1 operator()(type1 a, T b)  const                \
+            inline type1 operator()(type1 a, T b) const  BOOST_NOEXCEPT \
             {                                                           \
                 using namespace std;                                    \
                 return c99_func(a, b);                                  \
@@ -241,7 +244,7 @@ namespace boost {                                                       \
             typedef type1 float_type;                                   \
                                                                         \
             template <typename T>                                       \
-            inline type1 operator()(type1 a, T b)  const                \
+            inline type1 operator()(type1 a, T b) const BOOST_NOEXCEPT  \
             {                                                           \
                 using namespace std;                                    \
                 return cpp_func(a, b);                                  \
@@ -263,7 +266,9 @@ namespace boost {                                                       \
         template <>                                                     \
         struct call_##cpp_func<type1> {                                 \
             typedef type1 float_type;                                   \
-            inline type1 operator()(type1 x, type2 y) const {           \
+            inline type1 operator()(type1 x, type2 y)                   \
+                const BOOST_NOEXCEPT                                    \
+            {                                                           \
                 return c99_func(x, y);                                  \
             }                                                           \
         };                                                              \
@@ -327,7 +332,7 @@ namespace boost
         struct select_hash_type : select_hash_type_impl<
                 BOOST_DEDUCED_TYPENAME call_ldexp<Float>::float_type,
                 BOOST_DEDUCED_TYPENAME call_frexp<Float>::float_type
-            > {};            
+            > {};
     }
 }
 
