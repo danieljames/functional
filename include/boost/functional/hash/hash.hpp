@@ -393,13 +393,13 @@ namespace boost
     template< class T, unsigned N >
     inline std::size_t hash_value(const T (&x)[N])
     {
-        return boost::hash_range(x, x + N);
+        return boost::hash_value(static_cast<T const*>(x));
     }
 
     template< class T, unsigned N >
     inline std::size_t hash_value(T (&x)[N])
     {
-        return boost::hash_range(x, x + N);
+        return boost::hash_value(static_cast<T*>(x));
     }
 #endif
 

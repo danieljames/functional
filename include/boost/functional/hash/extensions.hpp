@@ -275,7 +275,7 @@ namespace boost
     {
         std::size_t operator()(const T* val) const
         {
-            return boost::hash_range(val, val+n);
+            return boost::hash_value(val);
         }
     };
 #endif
