@@ -348,7 +348,7 @@ namespace boost
 
         for(; first != last; ++first)
         {
-            hash_combine(seed, *first);
+            boost::hash_combine(seed, *first);
         }
 
         return seed;
@@ -359,7 +359,7 @@ namespace boost
     {
         for(; first != last; ++first)
         {
-            hash_combine(seed, *first);
+            boost::hash_combine(seed, *first);
         }
     }
 
@@ -393,13 +393,13 @@ namespace boost
     template< class T, unsigned N >
     inline std::size_t hash_value(const T (&x)[N])
     {
-        return hash_range(x, x + N);
+        return boost::hash_range(x, x + N);
     }
 
     template< class T, unsigned N >
     inline std::size_t hash_value(T (&x)[N])
     {
-        return hash_range(x, x + N);
+        return boost::hash_range(x, x + N);
     }
 #endif
 
@@ -407,7 +407,7 @@ namespace boost
     inline std::size_t hash_value(
         std::basic_string<Ch, std::BOOST_HASH_CHAR_TRAITS<Ch>, A> const& v)
     {
-        return hash_range(v.begin(), v.end());
+        return boost::hash_range(v.begin(), v.end());
     }
 
     template <typename T>
